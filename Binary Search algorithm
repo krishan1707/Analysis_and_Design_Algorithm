@@ -1,0 +1,80 @@
+Binary Search Algorithm:
+
+Input: Sorted Array A[0..n-1], integer n, integer key
+Output: Index of key if found, else -1
+Step 1: Set low ← 0, high ← n - 1
+Step 2: While low ≤ high do
+mid ← (low + high) / 2
+If A[mid] = key then
+Return mid
+Else if A[mid] < key then
+low ← mid + 1
+Else
+high ← mid - 1
+Step 3: End While
+Step 4: Return -1
+
+Pseudo-code:
+BinarySearch(A, n, key):
+low ← 0
+high ← n - 1
+while low <= high do
+mid ← (low + high) / 2
+if A[mid] = key then
+return mid
+else if A[mid] < key then
+low ← mid + 1
+else
+high ← mid - 1
+return -1
+
+Binary search code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+int binarySearch(int arr[], int n, int key) {
+int low = 0, high = n - 1, mid;
+
+while (low <= high) {
+mid = (low + high) / 2;
+if (arr[mid] == key)
+return mid;
+else if (arr[mid] < key)
+low = mid + 1;
+else
+high = mid - 1;
+}
+return -1;
+}
+// Compare function for qsort
+int compare(const void *a, const void *b) {
+return (*(int *)a - *(int *)b);
+}
+int main() {
+int n, key, pos;
+clock_t start, end;
+double cpu_time;
+int sizes[] = {1000, 5000, 10000, 20000, 50000, 100000};
+int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+int repetitions = 100000; // repeat many times to get measurable time
+printf("n,AverageTimeTaken(seconds)\n");
+for (int s = 0; s < num_sizes; s++) {
+n = sizes[s];
+int *arr = (int *)malloc(n * sizeof(int));
+for (int i = 0; i < n; i++)
+arr[i] = rand();
+qsort(arr, n, sizeof(int), compare);
+key = arr[n - 1]; // worst case element
+start = clock();
+for (int r = 0; r < repetitions; r++) {
+pos = binarySearch(arr, n, key);
+}
+end = clock();
+cpu_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+cpu_time /= repetitions; // average time per search
+printf("%d,%.10f\n", n, cpu_time);
+free(arr);
+
+}
+return 0;
+}
