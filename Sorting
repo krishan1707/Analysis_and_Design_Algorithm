@@ -1,0 +1,544 @@
+2 (a) Design and implement C Program to sort a given set of n integer elements using Merge Sort
+method and compute its time complexity. Run the program for varied values of n, and record the
+time taken to sort. Plot a graph of the time taken versus n. The elements can be read from a file or
+can be generated using the random number generator
+Merge Sort
+Algorithm
+Input: Array A[0..n-1], integer n
+Output: Sorted Array A
+Step 1: If low < high then
+Step 1.1: Find mid = (low + high)/2
+Step 1.2: Recursively sort left half (low..mid)
+Step 1.3: Recursively sort right half (mid+1..high)
+Step 1.4: Merge the two sorted halves
+Step 2: End If
+Pseudocode :-
+MergeSort(A, low, high):
+if low < high:
+mid = (low + high) / 2
+MergeSort(A, low, mid)
+MergeSort(A, mid + 1, high)
+Merge(A, low, mid, high)
+
+Merge(A, low, mid, high):
+create temp arrays L = A[low..mid], R = A[mid+1..high]
+i = 0, j = 0, k = low
+while i < length(L) and j < length(R):
+if L[i] <= R[j]:
+A[k] = L[i]
+i++
+else:
+A[k] = R[j]
+j++
+k++
+copy remaining elements of L and R to A
+
+CODE :
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void merge(int arr[], int left, int mid, int right) {
+int n1 = mid - left + 1;
+int n2 = right - mid;
+
+int *L = (int *)malloc(n1 * sizeof(int));
+int *R = (int *)malloc(n2 * sizeof(int));
+
+for (int i = 0; i < n1; i++)
+L[i] = arr[left + i];
+for (int j = 0; j < n2; j++)
+R[j] = arr[mid + 1 + j];
+
+int i = 0, j = 0, k = left;
+while (i < n1 && j < n2) {
+if (L[i] <= R[j])
+arr[k++] = L[i++];
+else
+arr[k++] = R[j++];
+}
+
+while (i < n1)
+arr[k++] = L[i++];
+while (j < n2)
+arr[k++] = R[j++];
+
+free(L);
+
+free(R);
+}
+
+void mergeSort(int arr[], int left, int right) {
+if (left < right) {
+int mid = left + (right - left) / 2;
+mergeSort(arr, left, mid);
+mergeSort(arr, mid + 1, right);
+merge(arr, left, mid, right);
+}
+}
+
+void generateRandomArray(int arr[], int n) {
+for (int i = 0; i < n; i++)
+arr[i] = rand() % 10000;
+}
+
+void testMergeSort(int n) {
+int *arr = (int *)malloc(n * sizeof(int));
+generateRandomArray(arr, n);
+
+clock_t start, end;
+start = clock();
+mergeSort(arr, 0, n - 1);
+end = clock();
+
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Sorted %6d elements in %f seconds.\n", n, time_taken);
+
+free(arr);
+}
+
+int main() {
+int sizes[] = {10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000};
+int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+srand(time(NULL));
+
+for (int i = 0; i < num_sizes; i++) {
+testMergeSort(sizes[i]);
+}
+
+return 0;
+}
+
+
+
+Python matplotlib code ----
+% Merge Sort Execution Time Plot
+n = [10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000];
+time = [0.000004, 0.000007, 0.000013, 0.000070, 0.000144, 0.000470, 0.000790, 0.000949,
+0.001098, 0.002477];
+
+figure;
+
+plot(n, time, '-o', 'LineWidth', 2, 'MarkerSize', 8);
+xlabel('Number of Elements (n)');
+ylabel('Time (seconds)');
+title('Merge Sort Execution Time vs Input Size');
+grid on;
+
+2(b)Design and implement C Program to sort a given set of n integer elements using Quick Sort
+method and compute its time complexity. Run the program for varied values of n, and record the
+time taken to sort. Plot a graph of the time taken versus n. The elements can be read from a file or
+can be generated using the random number generator
+
+Quick Sort
+Algorithm
+Input: Array A[0..n-1], integer n
+Output: Sorted Array A
+Step 1: If low < high then
+Step 1.1: Partition the array A around a pivot such that elements less than pivot are on left,
+greater on right
+Step 1.2: Recursively sort left subarray (low, pivotIndex - 1)
+Step 1.3: Recursively sort right subarray (pivotIndex + 1, high)
+
+Step 2: End If
+Step 3: End
+
+Pseudocode : –
+QuickSort(A, low, high):
+if low < high:
+p = Partition(A, low, high)
+QuickSort(A, low, p - 1)
+QuickSort(A, p + 1, high)
+
+Partition(A, low, high):
+pivot = A[high]
+i = low - 1
+for j = low to high - 1:
+if A[j] <= pivot:
+i = i + 1
+swap A[i], A[j]
+swap A[i + 1], A[high]
+return i + 1
+
+CODE :
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int partition(int arr[], int low, int high) {
+int pivot = arr[high];
+int i = low - 1;
+for (int j = low; j < high; j++) {
+
+if (arr[j] <= pivot) {
+i++;
+int temp = arr[i];
+arr[i] = arr[j];
+arr[j] = temp;
+}
+}
+int temp = arr[i + 1];
+arr[i + 1] = arr[high];
+arr[high] = temp;
+return i + 1;
+}
+
+void quickSort(int arr[], int low, int high) {
+if (low < high) {
+int pi = partition(arr, low, high);
+quickSort(arr, low, pi - 1);
+quickSort(arr, pi + 1, high);
+}
+}
+
+void generateRandomArray(int arr[], int n) {
+for (int i = 0; i < n; i++)
+arr[i] = rand() % 10000;
+}
+
+void testQuickSort(int n) {
+int *arr = (int *)malloc(n * sizeof(int));
+generateRandomArray(arr, n);
+
+clock_t start, end;
+start = clock();
+
+quickSort(arr, 0, n - 1);
+end = clock();
+
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Sorted %6d elements in %f seconds.\n", n, time_taken);
+
+free(arr);
+}
+
+int main() {
+
+int sizes[] = {10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000};
+int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+srand(time(NULL));
+
+for (int i = 0; i < num_sizes; i++) {
+testQuickSort(sizes[i]);
+}
+
+return 0;
+}
+
+Python matplotlib code :
+import matplotlib.pyplot as plt
+
+n = [10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000]
+quick_sort_time = [0.000006, 0.000008, 0.000016, 0.000099, 0.000196, 0.000576, 000.000967,
+0.000478, 0.000502, 0.000578]
+
+plt.plot(n, quick_sort_time, marker='o', linewidth=2, label="Quick Sort")
+plt.xlabel("Number of Elements (n)")
+plt.ylabel("Time (seconds)")
+plt.title("Quick Sort Execution Time vs Input Size")
+plt.grid(True)
+plt.legend()
+plt.show()
+
+2(c) Design and implement C Program to sort a given set of n integer elements using Insertion Sort
+method and compute its time complexity. Run the program for varied values of n, and record the
+time taken to sort. Plot a graph of the time taken versus n. The elements can be read from a file or
+can be generated using the random number generator
+
+Insertion Sort
+Algorithm
+Input: Array A[0..n-1], integer n
+Output: Sorted Array A
+Step 1: For i = 1 to n-1 do
+Step 1.1: key = A[i]
+Step 1.2: j = i - 1
+Step 1.3: While j >= 0 and A[j] > key do
+A[j + 1] = A[j], j--
+Step 1.4: Place key at A[j + 1]
+Step 2: End For
+Pseudocode:-
+InsertionSort(A, n):
+for i = 1 to n-1:
+key = A[i]
+j = i - 1
+while j >= 0 and A[j] > key:
+A[j + 1] = A[j]
+j = j - 1
+A[j + 1] = key
+
+CODE :
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void insertionSort(int arr[], int n) {
+
+for (int i = 1; i < n; i++) {
+int key = arr[i];
+int j = i - 1;
+while (j >= 0 && arr[j] > key) {
+arr[j + 1] = arr[j];
+j--;
+}
+arr[j + 1] = key;
+}
+}
+
+void generateRandomArray(int arr[], int n) {
+for (int i = 0; i < n; i++)
+arr[i] = rand() % 10000;
+}
+
+void testInsertionSort(int n) {
+int *arr = (int *)malloc(n * sizeof(int));
+generateRandomArray(arr, n);
+
+clock_t start, end;
+start = clock();
+insertionSort(arr, n);
+end = clock();
+
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Sorted %6d elements in %f seconds.\n", n, time_taken);
+
+free(arr);
+}
+
+int main() {
+
+int sizes[] = {10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000};
+int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+srand(time(NULL));
+
+for (int i = 0; i < num_sizes; i++) {
+testInsertionSort(sizes[i]);
+}
+
+return 0;
+}
+
+
+
+Python matplotlib code ----
+import matplotlib.pyplot as plt
+
+n = [10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000]
+insertion_sort_time = [0.000002, 0.000003, 0.000008, 0.000149, 0.000583, 0.005127, 0.012425,
+0.015338, 0.018461, 0.022573]
+
+plt.plot(n, insertion_sort_time, marker='o', linewidth=2, label="Insertion Sort")
+plt.xlabel("Number of Elements (n)")
+plt.ylabel("Time (seconds)")
+plt.title("Insertion Sort Execution Time vs Input Size")
+plt.grid(True)
+plt.legend()
+plt.show()
+
+2(d) Design and implement C Program to sort a given set of n integer elements using Selection Sort
+method and compute its time complexity. Run the program for varied values of n, and record the
+time taken to sort. Plot a graph of the time taken versus n. The elements can be read from a file or
+can be generated using the random number generator
+Selection Sort
+
+Algorithm
+Input: Array A[0..n-1], integer n
+Output: Sorted Array A
+Step 1: For i = 0 to n-2 do
+Step 1.1: minIndex = i
+Step 1.2: For j = i+1 to n-1 do
+If A[j] < A[minIndex] then minIndex = j
+Step 1.3: Swap A[i] and A[minIndex]
+Step 2: End For
+Pseudocode SelectionSort(A, n):
+for i = 0 to n-2:
+minIndex = i
+for j = i+1 to n-1:
+if A[j] < A[minIndex]:
+minIndex = j
+swap A[i], A[minIndex]
+
+CODE :
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void selectionSort(int arr[], int n) {
+for (int i = 0; i < n - 1; i++) {
+int minIndex = i;
+for (int j = i + 1; j < n; j++) {
+if (arr[j] < arr[minIndex])
+minIndex = j;
+}
+int temp = arr[minIndex];
+arr[minIndex] = arr[i];
+arr[i] = temp;
+}
+
+}
+
+void generateRandomArray(int arr[], int n) {
+for (int i = 0; i < n; i++)
+arr[i] = rand() % 10000;
+}
+
+void testSelectionSort(int n) {
+int *arr = (int *)malloc(n * sizeof(int));
+generateRandomArray(arr, n);
+
+clock_t start, end;
+start = clock();
+selectionSort(arr, n);
+end = clock();
+
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Sorted %6d elements in %f seconds.\n", n, time_taken);
+
+free(arr);
+}
+
+int main() {
+int sizes[] = {10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000};
+int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+srand(time(NULL));
+
+for (int i = 0; i < num_sizes; i++) {
+testSelectionSort(sizes[I]);
+}
+
+return 0;
+
+}
+
+
+
+Python matplotlib code ------import matplotlib.pyplot as plt
+
+n = [10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000]
+selection_sort_time = [0.000006, 0.000011, 0.000031, 0.000563, 0.002057, 0.016075, 0.030549,
+0.029978, 0.033015, 0.040976]
+
+plt.plot(n, selection_sort_time, marker='o', linewidth=2, color='purple', label="Selection Sort")
+plt.xlabel("Number of Elements (n)")
+plt.ylabel("Time (seconds)")
+plt.title("Selection Sort Execution Time vs Input Size")
+plt.grid(True)
+plt.legend()
+plt.show()
+
+2 (e) Design and implement C Program to sort a given set of n integer elements using Bubble Sort
+method and compute its time complexity. Run the program for varied values of n, and record the
+time taken to sort. Plot a graph of the time taken versus n. The elements can be read from a file or
+can be generated using the random number generator
+
+Bubble Sort
+Algorithm
+Input: Array A[0..n-1], integer n
+Output: Sorted Array A
+Step 1: For i = 0 to n-2 do
+Step 1.1: For j = 0 to n-i-2 do
+If A[j] > A[j+1] then swap A[j], A[j+1]
+Step 2: End For
+Pseudocode –
+BubbleSort(A, n):
+for i = 0 to n-2:
+for j = 0 to n-i-2:
+if A[j] > A[j+1]:
+swap A[j], A[j+1]
+
+CODE :
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void bubbleSort(int arr[], int n) {
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+if (arr[j] > arr[j + 1]) {
+int temp = arr[j];
+arr[j] = arr[j + 1];
+arr[j + 1] = temp;
+}
+}
+
+}
+}
+
+void generateRandomArray(int arr[], int n) {
+for (int i = 0; i < n; i++)
+arr[i] = rand() % 10000;
+}
+
+int main() {
+
+int sizes[] = {10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000};
+for (int s = 0; s < 10; s++) {
+int n = sizes[s];
+int *arr = (int *)malloc(n * sizeof(int));
+generateRandomArray(arr, n);
+
+clock_t start = clock();
+bubbleSort(arr, n);
+clock_t end = clock();
+
+double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Sorted %6d elements in %f seconds.\n", n, time_taken);
+
+free(arr);
+}
+return 0;
+}
+
+
+
+Python matplotlib code---
+import matplotlib.pyplot as plt
+
+n = [10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000]
+time = [0.000005, 0.000021, 0.000059, 0.001121, 0.003802, 0.029534, 0.051092, 0.055073,
+0.077018, 0.099760]
+
+plt.plot(n, time, marker='o', linestyle='-', linewidth=2)
+plt.xlabel("Number of Elements (n)")
+plt.ylabel("Time Taken (seconds)")
+plt.title("Bubble Sort Time Complexity")
+plt.grid(True)
+plt.show()
+
+Combined graph code and output :
+import matplotlib.pyplot as plt
+n_values = [10, 50, 100, 500, 1000, 3000, 5000, 6000, 7000, 8000]
+
+merge_sort_times = [0.000004, 0.000007, 0.000013, 0.000070, 0.000144, 0.000470, 0.000790,
+0.000949, 0.001098, 0.002477]
+
+quick_sort_times = [0.000006, 0.000008, 0.000016, 0.000099, 0.000196, 0.000576, 000.000967,
+0.000478, 0.000502, 0.000578]
+insertion_sort_times = [0.000002, 0.000003, 0.000008, 0.000149, 0.000583, 0.005127, 0.012425,
+0.015338, 0.018461, 0.022573]
+selection_sort_times = [0.000006, 0.000011, 0.000031, 0.000563, 0.002057, 0.016075, 0.030549,
+0.029978, 0.033015, 0.040976]
+bubble_sort_times = [0.000005, 0.000021, 0.000059, 0.001121, 0.003802, 0.029534, 0.051092,
+0.055073, 0.077018, 0.099760
+
+plt.plot(n_values, merge_sort_times, marker='o', label='Merge Sort (O(n log n))')
+plt.plot(n_values, quick_sort_times, marker='o', label='Quick Sort (O(n log n))')
+plt.plot(n_values, insertion_sort_times, marker='o', label='Insertion Sort (O(n2))')
+plt.plot(n_values, selection_sort_times, marker='o', label='Selection Sort (O(n2))')
+plt.plot(n_values, bubble_sort_times, marker='o', label='Bubble Sort (O(n2))')
+
+plt.xlabel('Number of Elements (n)')
+plt.ylabel('Time Taken (seconds)')
+plt.title('Sorting Algorithm Performance Comparison')
+plt.legend()
+
+plt.grid(True)
+plt.show()
