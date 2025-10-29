@@ -1,0 +1,389 @@
+Objective: To implement and analyze different approaches for generating Fibonacci numbers and
+compare their time and space complexities (through graph)
+Write algorithms also for each version.
+4a. Recursive version
+4b Iterative version
+4c Dynamic Programming- Top Down Approach
+4d Dynamic Programming- Bottom Up Approach
+
+Practical 4a: Recursive Fibonacci
+Aim
+To implement Fibonacci number generation using recursion and analyze its time and space
+complexity.
+
+Theory
+• The Fibonacci sequence is defined as:
+F(0) = 0, F(1) = 1, and
+F(n) = F(n-1) + F(n-2) for n ≥ 2.
+• The recursive approach directly implements the mathematical definition.
+• However, it recomputes many subproblems, leading to exponential time complexity.
+• Time Complexity: O(2^n)
+• Space Complexity: O(n) (due to recursion stack)
+
+Algorithm
+1. If n = 0 → return 0.
+2. If n = 1 → return 1.
+3. Otherwise → return fib(n-1) + fib(n-2).
+Code—
+#include <stdio.h>
+
+// Recursive Fibonacci
+int fib(int n) {
+if (n == 0) return 0;
+if (n == 1) return 1;
+return fib(n-1) + fib(n-2);
+}
+
+int main() {
+int n;
+printf("Enter number of terms: ");
+scanf("%d", &n);
+
+printf("Fibonacci series: ");
+for (int i = 0; i < n; i++) {
+printf("%d ", fib(i));
+}
+return 0;
+}
+
+Output—
+
+Conclusion
+• Recursive Fibonacci is easy to understand but inefficient.
+• It has exponential time complexity and should not be used for large n.
+
+Practical 4b: Iterative Fibonacci
+Aim
+To implement Fibonacci number generation using an iterative method and analyze its time and space
+complexity.
+
+Theory
+
+• The iterative method uses a simple loop to compute Fibonacci numbers.
+• It avoids redundant calculations and recursion stack usage.
+• Time Complexity: O(n)
+• Space Complexity: O(1)
+
+Algorithm
+1. Initialize first two terms (a = 0, b = 1).
+2. Loop from 2 to n:
+o Compute next = a + b.
+o Update a = b, b = next.
+3. Print the sequence.
+Code----
+#include <stdio.h>
+
+// Iterative Fibonacci
+void fib(int n) {
+int a = 0, b = 1, next;
+for (int i = 0; i < n; i++) {
+if (i <= 1)
+next = i;
+else {
+next = a + b;
+a = b;
+b = next;
+}
+printf("%d ", next);
+}
+}
+
+int main() {
+int n;
+printf("Enter number of terms: ");
+
+scanf("%d", &n);
+
+printf("Fibonacci series: ");
+fib(n);
+
+return 0;
+}
+
+Conclusion
+• Iterative Fibonacci is much more efficient than recursion.
+• It runs in linear time and uses only constant space.
+
+Practical 4c: Dynamic Programming – Top Down (Memoization)
+Aim
+To implement Fibonacci using a top-down DP approach (recursion + memoization) and analyze its
+complexity.
+
+Theory
+• Memoization stores results of subproblems in an array, avoiding recomputation.
+• Uses recursion + caching.
+• Time Complexity: O(n)
+• Space Complexity: O(n) (for memo array + recursion stack)
+
+Algorithm
+
+1. Create an array dp[] initialized with -1.
+2. If dp[n] ≠ -1, return dp[n].
+3. Otherwise, compute fib(n-1) + fib(n-2), store in dp[n].
+4. Return dp[n].
+Code---
+#include <stdio.h>
+
+int dp[1000]; // memoization array
+
+int fib(int n) {
+if (n == 0) return 0;
+if (n == 1) return 1;
+if (dp[n] != -1) return dp[n];
+
+dp[n] = fib(n-1) + fib(n-2);
+return dp[n];
+}
+
+int main() {
+int n;
+printf("Enter number of terms: ");
+scanf("%d", &n);
+
+// initialize dp with -1
+for (int i = 0; i < 1000; i++) dp[i] = -1;
+
+printf("Fibonacci series: ");
+for (int i = 0; i < n; i++) {
+printf("%d ", fib(i));
+}
+
+return 0;
+
+}
+Output---
+
+Conclusion
+• Top-down DP avoids recomputation by caching results.
+• More efficient than recursion but still requires recursion stack space.
+
+Practical 4d: Dynamic Programming – Bottom Up (Tabulation)
+Aim
+To implement Fibonacci using a bottom-up DP approach and analyze its complexity.
+
+Theory
+• Bottom-up DP builds the solution iteratively from base cases.
+• Eliminates recursion, only uses a loop.
+• Time Complexity: O(n)
+• Space Complexity: O(n) (can be optimized to O(1))
+
+Algorithm
+1. Create an array dp[n+1].
+2. Initialize dp[0] = 0, dp[1] = 1.
+3. For i = 2 to n: dp[i] = dp[i-1] + dp[i-2].
+4. Print dp[i].
+Code---
+#include <stdio.h>
+
+// Bottom-up DP
+void fib(int n) {
+int dp[n+1];
+dp[0] = 0;
+dp[1] = 1;
+
+printf("%d %d ", dp[0], dp[1]);
+for (int i = 2; i < n; i++) {
+dp[i] = dp[i-1] + dp[i-2];
+printf("%d ", dp[i]);
+}
+}
+
+int main() {
+int n;
+printf("Enter number of terms: ");
+scanf("%d", &n);
+
+printf("Fibonacci series: “);
+fib(n);
+
+return 0;
+}
+
+Conclusion
+• Bottom-up DP is efficient and avoids recursion.
+• It uses O(n) time and O(n) space, but can be optimized to O(1) space if only last two values
+are stored.
+Comparing time complexities using graph
+
+#include <stdio.h>
+#include <time.h>
+
+#define MAX 1000
+
+// ---------- 1. Recursive Fibonacci ----------
+int fib_recursive(int n) {
+if (n <= 1) return n;
+return fib_recursive(n-1) + fib_recursive(n-2);
+}
+
+// ---------- 2. Iterative Fibonacci ----------
+int fib_iterative(int n) {
+if (n <= 1) return n;
+int a = 0, b = 1, next;
+for (int i = 2; i <= n; i++) {
+next = a + b;
+Method Time
+Complexity
+
+Space
+Complexity Notes
+
+Recursive O(2^n) O(n) Exponential time, recursion stack
+Iterative O(n) O(1) Linear time, constant memory
+DP Top
+Down O(n) O(n) Memoization array + recursion stack
+DP Bottom
+Up O(n) O(n) Array stores all Fibonacci numbers; can optimize
+
+to O(1)
+
+a = b;
+b = next;
+}
+return b;
+}
+
+// ---------- 3. DP Top Down (Memoization) ----------
+int dp[MAX];
+int fib_topdown(int n) {
+if (n <= 1) return n;
+if (dp[n] != -1) return dp[n];
+dp[n] = fib_topdown(n-1) + fib_topdown(n-2);
+return dp[n];
+}
+
+// ---------- 4. DP Bottom Up (Tabulation) ----------
+int fib_bottomup(int n) {
+if (n <= 1) return n;
+int dp[n+1];
+dp[0] = 0;
+dp[1] = 1;
+for (int i = 2; i <= n; i++) {
+dp[i] = dp[i-1] + dp[i-2];
+}
+return dp[n];
+}
+
+// ---------- Main ----------
+int main() {
+int n;
+clock_t start, end;
+double time_taken;
+
+printf("Enter n: ");
+scanf("%d", &n);
+
+// Recursive
+start = clock();
+int res1 = fib_recursive(n);
+end = clock();
+time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Recursive Result = %d, Time = %f seconds\n", res1, time_taken);
+
+// Iterative
+start = clock();
+int res2 = fib_iterative(n);
+end = clock();
+time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("Iterative Result = %d, Time = %f seconds\n", res2, time_taken);
+
+// DP Top Down
+for (int i = 0; i < MAX; i++) dp[i] = -1; // reset memo
+start = clock();
+int res3 = fib_topdown(n);
+end = clock();
+time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("DP Top Down Result = %d, Time = %f seconds\n", res3, time_taken);
+
+// DP Bottom Up
+start = clock();
+int res4 = fib_bottomup(n);
+end = clock();
+time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+printf("DP Bottom Up Result = %d, Time = %f seconds\n", res4, time_taken);
+
+return 0;
+}
+
+import matplotlib.pyplot as plt
+
+n_values = [10, 30, 40, 45, 46]
+recursive_times = [0.000003, 0.006, 0.69, 7.54, 12.52]
+iterative_times = [0.000001, 0.000001, 0.000001, 0.000001, 0.000002]
+topdown_times = [0.000001, 0.000001, 0.000002, 0.000001, 0.000002]
+bottomup_times = [0.000001, 0.000001, 0.000001, 0.000001, 0.000002]
+
+# Plot
+plt.plot(n_values, recursive_times, marker='o', label="Recursive")
+plt.plot(n_values, iterative_times, marker='s', label="Iterative")
+plt.plot(n_values, topdown_times, marker='^', label="DP Top Down")
+plt.plot(n_values, bottomup_times, marker='d', label="DP Bottom Up")
+
+plt.xlabel("n (input size)")
+
+plt.ylabel("Execution Time (seconds)")
+plt.title("Fibonacci Time Complexity Comparison")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+Space estimation
+Recursive: n * 8 (stack frames)
+Iterative: 3 * 8 = 24 (constant, just 3 variables)
+DP Top Down: n * 8 + recursion stack (≈4*8 for overhead) → simplified: n*8 + 4*8 = n*8 + 32 DP
+Bottom Up: n * 8 (array only)
+n
+Recursive
+(bytes)
+
+Iterative
+(bytes)
+
+DP Top Down
+(bytes)
+
+DP Bottom Up
+(bytes)
+
+1
+0 10*8 = 80 24 10*8 + 32 = 112 10*8 = 80
+3
+0 30*8 = 240 24 30*8 + 32 = 272 30*8 = 240
+
+import matplotlib.pyplot as plt
+
+n_values = [10, 30, 40, 45, 46]
+recursive_space = [80, 240, 320, 360, 368]
+iterative_space = [24, 24, 24, 24, 24]
+dp_topdown_space = [112, 272, 352, 392, 400]
+dp_bottomup_space = [80, 240, 320, 360, 368]
+
+plt.plot(n_values, recursive_space, marker='o', label="Recursive")
+plt.plot(n_values, iterative_space, marker='s', label="Iterative")
+plt.plot(n_values, dp_topdown_space, marker='^', label="DP Top Down")
+plt.plot(n_values, dp_bottomup_space, marker='d', label="DP Bottom Up")
+
+plt.xlabel("n (input size)")
+plt.ylabel("Estimated Space (bytes)")
+plt.title("Fibonacci Space Complexity Comparison")
+plt.legend()
+plt.grid(True)
+plt.show()
+4
+0 40*8 = 320 24 40*8 + 32 = 352 40*8 = 320
+4
+5 45*8 = 360 24 45*8 + 32 = 392 45*8 = 360
+4
+6 46*8 = 368 24 46*8 + 32 = 400 46*8 = 368
+n
+Recursive
+(bytes)
+
+Iterative
+(bytes)
+
+DP Top Down
+(bytes)
+
+DP Bottom Up
+(bytes)
