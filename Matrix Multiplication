@@ -1,0 +1,599 @@
+Practical 3(a) : Matrix Multiplication (Iterative Approach)
+Aim
+To write a C program to multiply two square matrices using the iterative approach (nested loops) and
+compare the execution time for different matrix sizes.
+
+Theory
+Matrix multiplication is defined as :
+For two matrices A and B, their product C is given by :
+C[i][j]=∑k=0n−1A[i][k]×B[k][j]C[i][j] = \sum_{k=0}^{n-1} A[i][k] \times B[k][j]C[i][j]=k=0∑n−1​A[i]
+[k]×B[k][j]
+This requires three nested loops → O(n3) time complexity.
+Execution time increases rapidly with matrix size.
+
+Algorithm:
+
+1. Input the order of the matrix nxn.
+2. Generate two random matrices A and B of size n×n \times n×n.
+3. Initialize result matrix C with zeros.
+4. Multiply using three nested loops:
+o Outer loop: row index of A.
+o Middle loop: column index of B.
+o Inner loop: sum of products.
+5. Print execution time for different values of n.
+
+Code
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX 1024 // maximum matrix size
+
+void generateMatrix(int n, int mat[n][n]) {
+for(int i=0; i<n; i++)
+for(int j=0; j<n; j++)
+
+mat[i][j] = rand() % 10;
+}
+
+void multiplyIterative(int n, int A[n][n], int B[n][n], int C[n][n]) {
+for(int i=0; i<n; i++) {
+for(int j=0; j<n; j++) {
+C[i][j] = 0;
+for(int k=0; k<n; k++) {
+C[i][j] += A[i][k] * B[k][j];
+}
+}
+}
+}
+
+int main() {
+int n;
+printf("Enter matrix size (n x n): ");
+scanf("%d", &n);
+
+int A[n][n], B[n][n], C[n][n];
+generateMatrix(n, A);
+generateMatrix(n, B);
+
+clock_t start = clock();
+multiplyIterative(n, A, B, C);
+clock_t end = clock();
+
+double time_taken = (double)(end - start) / CLOCKS_PER_SEC;
+printf("Execution time for size %d x %d = %f seconds\n", n, n, time_taken);
+
+return 0;
+}
+
+
+
+Practical 3(b): Matrix Multiplication (Recursive Approach)
+Aim
+To write a C program to multiply two square matrices using the recursive approach and compare the
+execution time for different matrix sizes.
+
+Theory
+The recursive approach divides the matrix multiplication problem into smaller subproblems.
+• Each matrix is divided into four n2×n2\frac{n}{2} \times \frac{n}{2}2n​×2n​ submatrices.
+• Recursively compute and combine results.
+• Time complexity is still O(n3), but recursion demonstrates divide-and-conquer technique.
+
+Algorithm
+1. If n=1n = 1n=1, simply multiply the two elements.
+2. Otherwise, divide A and B into submatrices:
+A=[A11A12A21A22],B=[B11B12B21B22]A = \begin{bmatrix} A11 & A12 \\ A21 & A22 \end{bmatrix},
+\quad B = \begin{bmatrix} B11 & B12 \\ B21 & B22 \end{bmatrix}A=[A11A21​A12A22​],B=[B11B21
+B12B22​]
+3. Recursively compute:
+o C11=A11∗B11+A12∗B21C11 = A11*B11 + A12*B21C11=A11∗B11+A12∗B21
+o C12=A11∗B12+A12∗B22C12 = A11*B12 + A12*B22C12=A11∗B12+A12∗B22
+o C21=A21∗B11+A22∗B21C21 = A21*B11 + A22*B21C21=A21∗B11+A22∗B21
+o C22=A21∗B12+A22∗B22C22 = A21*B12 + A22*B22C22=A21∗B12+A22∗B22
+4. Combine submatrices into result matrix.
+5. Measure execution time.
+
+Code: -
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void addMatrix(int size, int A[size][size], int B[size][size],
+int result[size][size]) {
+for (int i = 0; i < size; i++)
+for (int j = 0; j < size; j++)
+result[i][j] = A[i][j] + B[i][j];
+}
+
+void multiplyRecursive(int size, int A[size][size], int
+B[size][size], int C[size][size]) {
+if (size == 1) {
+C[0][0] = A[0][0] * B[0][0];
+return;
+}
+int newSize = size / 2;
+
+int A11[newSize][newSize], A12[newSize][newSize],
+A21[newSize][newSize], A22[newSize][newSize];
+int B11[newSize][newSize], B12[newSize][newSize],
+B21[newSize][newSize], B22[newSize][newSize];
+int C11[newSize][newSize], C12[newSize][newSize],
+C21[newSize][newSize], C22[newSize][newSize];
+int M1[newSize][newSize], M2[newSize][newSize],
+M3[newSize][newSize], M4[newSize][newSize];
+int M5[newSize][newSize], M6[newSize][newSize],
+M7[newSize][newSize], M8[newSize][newSize];
+
+for (int i = 0; i < newSize; i++)
+for (int j = 0; j < newSize; j++) {
+A11[i][j] = A[i][j];
+A12[i][j] = A[i][j + newSize];
+A21[i][j] = A[i + newSize][j];
+A22[i][j] = A[i + newSize][j + newSize];
+B11[i][j] = B[i][j];
+B12[i][j] = B[i][j + newSize];
+B21[i][j] = B[i + newSize][j];
+B22[i][j] = B[i + newSize][j + newSize];
+}
+
+multiplyRecursive(newSize, A11, B11, M1);
+multiplyRecursive(newSize, A12, B21, M2);
+addMatrix(newSize, M1, M2, C11);
+multiplyRecursive(newSize, A11, B12, M3);
+multiplyRecursive(newSize, A12, B22, M4);
+addMatrix(newSize, M3, M4, C12);
+multiplyRecursive(newSize, A21, B11, M5);
+multiplyRecursive(newSize, A22, B21, M6);
+addMatrix(newSize, M5, M6, C21);
+multiplyRecursive(newSize, A21, B12, M7);
+multiplyRecursive(newSize, A22, B22, M8);
+addMatrix(newSize, M7, M8, C22);
+
+for (int i = 0; i < newSize; i++)
+for (int j = 0; j < newSize; j++) {
+C[i][j] = C11[i][j];
+C[i][j + newSize] = C12[i][j];
+C[i + newSize][j] = C21[i][j];
+C[i + newSize][j + newSize] = C22[i][j];
+}
+}
+
+void initializeMatrix(int size, int matrix[size][size]) {
+for (int i = 0; i < size; i++)
+for (int j = 0; j < size; j++)
+matrix[i][j] = rand() % 10;
+}
+int main() {
+int sizes[] = {16, 64, 128};
+int numTests = sizeof(sizes) / sizeof(sizes[0]);
+for (int test = 0; test < numTests; test++) {
+int size = sizes[test];
+printf("\nMatrix Size: %dx%d\n", size, size);
+
+int (*mat1)[size] = malloc(sizeof(int[size][size]));
+int (*mat2)[size] = malloc(sizeof(int[size][size]));
+int (*result)[size] = malloc(sizeof(int[size][size]));
+initializeMatrix(size, mat1);
+initializeMatrix(size, mat2);
+
+clock_t start = clock();
+multiplyRecursive(size, mat1, mat2, result);
+clock_t end = clock();
+double time_taken = (double)(end - start) /
+CLOCKS_PER_SEC;
+printf("Execution Time: %.3f seconds\n", time_taken);
+free(mat1);
+free(mat2);
+free(result);
+}
+return 0;
+}
+
+
+
+
+Practical 3(c): Matrix Multiplication using Strassen’s Algorithm
+Aim
+To implement Strassen’s Algorithm in C for multiplying two square matrices (size n × n, where n is a
+power of 2) and compare execution time with iterative and recursive approaches.
+
+Theory
+
+• Normal recursive multiplication requires 8 recursive multiplications of submatrices.
+• Strassen’s Algorithm reduces it to 7 multiplications + additional additions/subtractions.
+• This improves complexity from O(n3) to approximately O(n^2.81).
+Strassen defines:
+M1=(A11+A22)(B11+B22)M2=(A21+A22)(B11)M3=(A11)(B12−B22)M4=(A22)
+(B21−B11)M5=(A11+A12)(B22)M6=(A21−A11)(B11+B12)M7=(A12−A22)(B21+B22)\begin{aligned}
+M1 &= (A11 + A22)(B11 + B22) \\ M2 &= (A21 + A22)(B11) \\ M3 &= (A11)(B12 - B22) \\ M4 &= (A22)
+(B21 - B11) \\ M5 &= (A11 + A12)(B22) \\ M6 &= (A21 - A11)(B11 + B12) \\ M7 &= (A12 - A22)(B21 +
+B22) \\ \end{aligned}M1M2M3M4M5M6M7​=(A11+A22)(B11+B22)=(A21+A22)(B11)=(A11)
+(B12−B22)=(A22)(B21−B11)=(A11+A12)(B22)=(A21−A11)(B11+B12)=(A12−A22)(B21+B22)​
+Final result:
+C11=M1+M4−M5+M7C12=M3+M5C21=M2+M4C22=M1−M2+M3+M6\begin{aligned} C11 &= M1 +
+M4 - M5 + M7 \\ C12 &= M3 + M5 \\ C21 &= M2 + M4 \\ C22 &= M1 - M2 + M3 + M6 \\
+\end{aligned}C11C12C21C22​=M1+M4−M5+M7=M3+M5=M2+M4=M1−M2+M3+M6​
+
+Algorithm
+1. If n=1n = 1n=1, multiply directly.
+2. Otherwise, divide A and B into 4 submatrices each.
+3. Compute M1–M7 using recursive calls.
+4. Compute C11, C12, C21, C22 using formulas above.
+5. Combine them into the final result.
+6. Measure execution time.
+Code-
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+// Utility Functions
+void generateMatrix(int n, int mat[n][n]) {
+for (int i = 0; i < n; i++)
+for (int j = 0; j < n; j++)
+mat[i][j] = rand() % 10;
+}
+void addMatrix(int n, int A[n][n], int B[n][n], int C[n][n]) {
+for (int i = 0; i < n; i++)
+for (int j = 0; j < n; j++)
+C[i][j] = A[i][j] + B[i][j];
+}
+
+void subMatrix(int n, int A[n][n], int B[n][n], int C[n][n]) {
+for (int i = 0; i < n; i++)
+for (int j = 0; j < n; j++)
+C[i][j] = A[i][j] - B[i][j];
+}
+// Iterative Matrix Multiplication
+void multiplyIterative(int n, int A[n][n], int B[n][n], int
+C[n][n]) {
+for (int i = 0; i < n; i++)
+for (int j = 0; j < n; j++) {
+C[i][j] = 0;
+for (int k = 0; k < n; k++)
+C[i][j] += A[i][k] * B[k][j];
+}
+}
+// Recursive Matrix Multiplication
+void multiplyRecursive(int n, int A[n][n], int B[n][n], int
+C[n][n]) {
+if (n == 1) {
+C[0][0] = A[0][0] * B[0][0];
+return;
+}
+int k = n / 2;
+int A11[k][k], A12[k][k], A21[k][k], A22[k][k];
+int B11[k][k], B12[k][k], B21[k][k], B22[k][k];
+int C11[k][k], C12[k][k], C21[k][k], C22[k][k];
+int M1[k][k], M2[k][k];
+// Split matrices
+for (int i = 0; i < k; i++)
+for (int j = 0; j < k; j++) {
+A11[i][j] = A[i][j];
+A12[i][j] = A[i][j + k];
+A21[i][j] = A[i + k][j];
+A22[i][j] = A[i + k][j + k];
+B11[i][j] = B[i][j];
+B12[i][j] = B[i][j + k];
+B21[i][j] = B[i + k][j];
+B22[i][j] = B[i + k][j + k];
+}
+// Recursive calls
+multiplyRecursive(k, A11, B11, M1);
+multiplyRecursive(k, A12, B21, M2);
+
+addMatrix(k, M1, M2, C11);
+multiplyRecursive(k, A11, B12, M1);
+multiplyRecursive(k, A12, B22, M2);
+addMatrix(k, M1, M2, C12);
+multiplyRecursive(k, A21, B11, M1);
+multiplyRecursive(k, A22, B21, M2);
+addMatrix(k, M1, M2, C21);
+multiplyRecursive(k, A21, B12, M1);
+multiplyRecursive(k, A22, B22, M2);
+addMatrix(k, M1, M2, C22);
+// Combine results
+for (int i = 0; i < k; i++)
+for (int j = 0; j < k; j++) {
+C[i][j] = C11[i][j];
+C[i][j + k] = C12[i][j];
+C[i + k][j] = C21[i][j];
+C[i + k][j + k] = C22[i][j];
+}
+}
+// Strassen’s Matrix Multiplication
+void strassen(int n, int A[n][n], int B[n][n], int C[n][n]) {
+if (n == 1) {
+C[0][0] = A[0][0] * B[0][0];
+return;
+}
+int k = n / 2;
+int A11[k][k], A12[k][k], A21[k][k], A22[k][k];
+int B11[k][k], B12[k][k], B21[k][k], B22[k][k];
+int C11[k][k], C12[k][k], C21[k][k], C22[k][k];
+int M1[k][k], M2[k][k], M3[k][k], M4[k][k], M5[k][k],
+M6[k][k], M7[k][k];
+int T1[k][k], T2[k][k];
+// Split matrices
+for (int i = 0; i < k; i++)
+for (int j = 0; j < k; j++) {
+A11[i][j] = A[i][j];
+A12[i][j] = A[i][j + k];
+A21[i][j] = A[i + k][j];
+A22[i][j] = A[i + k][j + k];
+B11[i][j] = B[i][j];
+B12[i][j] = B[i][j + k];
+
+B21[i][j] = B[i + k][j];
+B22[i][j] = B[i + k][j + k];
+}
+// Apply Strassen's formulas
+addMatrix(k, A11, A22, T1); addMatrix(k, B11, B22, T2);
+strassen(k, T1, T2, M1);
+addMatrix(k, A21, A22, T1); strassen(k, T1, B11, M2);
+subMatrix(k, B12, B22, T2); strassen(k, A11, T2, M3);
+subMatrix(k, B21, B11, T2); strassen(k, A22, T2, M4);
+addMatrix(k, A11, A12, T1); strassen(k, T1, B22, M5);
+subMatrix(k, A21, A11, T1); addMatrix(k, B11, B12, T2);
+strassen(k, T1, T2, M6);
+subMatrix(k, A12, A22, T1); addMatrix(k, B21, B22, T2);
+strassen(k, T1, T2, M7);
+// Combine results
+addMatrix(k, M1, M4, T1); subMatrix(k, T1, M5, T2);
+addMatrix(k, T2, M7, C11);
+addMatrix(k, M3, M5, C12);
+addMatrix(k, M2, M4, C21);
+subMatrix(k, M1, M2, T1); addMatrix(k, T1, M3, T2);
+addMatrix(k, T2, M6, C22);
+for (int i = 0; i < k; i++)
+for (int j = 0; j < k; j++) {
+C[i][j] = C11[i][j];
+C[i][j + k] = C12[i][j];
+C[i + k][j] = C21[i][j];
+C[i + k][j + k] = C22[i][j];
+}
+}
+// Main Function
+int main() {
+int n;
+printf("Enter matrix size (power of 2): ");
+scanf("%d", &n);
+int A[n][n], B[n][n], C[n][n];
+srand(time(0)); // Random seed
+generateMatrix(n, A);
+generateMatrix(n, B);
+clock_t start, end;
+double timeIterative, timeRecursive, timeStrassen;
+// Iterative
+
+start = clock();
+multiplyIterative(n, A, B, C);
+end = clock();
+timeIterative = (double)(end - start) / CLOCKS_PER_SEC;
+// Recursive
+start = clock();
+multiplyRecursive(n, A, B, C);
+end = clock();
+timeRecursive = (double)(end - start) / CLOCKS_PER_SEC;
+// Strassen
+start = clock();
+strassen(n, A, B, C);
+end = clock();
+timeStrassen = (double)(end - start) / CLOCKS_PER_SEC;
+printf("\nExecution Time Comparison (n=%d):\n", n);
+printf("Iterative : %f seconds\n", timeIterative);
+printf("Recursive : %f seconds\n", timeRecursive);
+printf("Strassen : %f seconds\n", timeStrassen);
+return 0;
+}
+
+
+Practical 3(d): Comparison of Iterative, Recursive & Strassen Multiplication
+Aim
+To compare execution times of matrix multiplication using iterative approach, recursive approach,
+and Strassen’s algorithm.
+
+Theory
+• Iterative: Simple triple loop, O(n3).
+• Recursive: Divide matrices into quadrants, O(n3).
+• Strassen: Reduces multiplications from 8 → 7, complexity ~O(n^2.81).
+• Running them side-by-side shows which is faster as n increases.
+
+Algorithm
+1. Input matrix size (power of 2 for recursion/Strassen).
+2. Generate random matrices A and B.
+3. Call:
+o Iterative multiplication.
+o Recursive multiplication.
+o Strassen multiplication.
+4. Measure execution time of each using clock().
+5. Print comparison results.
+
+Code
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// ---------- Utility functions ----------
+void generateMatrix(int n, int mat[n][n]) {
+for(int i=0; i<n; i++)
+for(int j=0; j<n; j++)
+
+mat[i][j] = rand() % 10;
+}
+
+void addMatrix(int n, int A[n][n], int B[n][n], int C[n][n]) {
+for(int i=0; i<n; i++)
+for(int j=0; j<n; j++)
+C[i][j] = A[i][j] + B[i][j];
+}
+
+void subMatrix(int n, int A[n][n], int B[n][n], int C[n][n]) {
+for(int i=0; i<n; i++)
+for(int j=0; j<n; j++)
+C[i][j] = A[i][j] - B[i][j];
+}
+
+// ---------- (a) Iterative ----------
+void multiplyIterative(int n, int A[n][n], int B[n][n], int C[n][n]) {
+for(int i=0; i<n; i++) {
+for(int j=0; j<n; j++) {
+C[i][j] = 0;
+for(int k=0; k<n; k++) {
+C[i][j] += A[i][k] * B[k][j];
+}
+}
+}
+}
+
+// ---------- (b) Recursive ----------
+void multiplyRecursive(int n, int A[n][n], int B[n][n], int C[n][n]) {
+if(n == 1) {
+C[0][0] = A[0][0] * B[0][0];
+return;
+
+}
+int k = n/2;
+
+int A11[k][k], A12[k][k], A21[k][k], A22[k][k];
+int B11[k][k], B12[k][k], B21[k][k], B22[k][k];
+int C11[k][k], C12[k][k], C21[k][k], C22[k][k];
+int M1[k][k], M2[k][k];
+
+// Split
+for(int i=0; i<k; i++) {
+for(int j=0; j<k; j++) {
+A11[i][j] = A[i][j];
+A12[i][j] = A[i][j+k];
+A21[i][j] = A[i+k][j];
+A22[i][j] = A[i+k][j+k];
+
+B11[i][j] = B[i][j];
+B12[i][j] = B[i][j+k];
+B21[i][j] = B[i+k][j];
+B22[i][j] = B[i+k][j+k];
+}
+}
+
+// C11 = A11*B11 + A12*B21
+multiplyRecursive(k, A11, B11, M1);
+multiplyRecursive(k, A12, B21, M2);
+addMatrix(k, M1, M2, C11);
+
+// C12 = A11*B12 + A12*B22
+multiplyRecursive(k, A11, B12, M1);
+multiplyRecursive(k, A12, B22, M2);
+addMatrix(k, M1, M2, C12);
+
+// C21 = A21*B11 + A22*B21
+multiplyRecursive(k, A21, B11, M1);
+multiplyRecursive(k, A22, B21, M2);
+addMatrix(k, M1, M2, C21);
+
+// C22 = A21*B12 + A22*B22
+multiplyRecursive(k, A21, B12, M1);
+multiplyRecursive(k, A22, B22, M2);
+addMatrix(k, M1, M2, C22);
+
+// Combine
+for(int i=0; i<k; i++) {
+for(int j=0; j<k; j++) {
+C[i][j] = C11[i][j];
+C[i][j+k] = C12[i][j];
+C[i+k][j] = C21[i][j];
+C[i+k][j+k] = C22[i][j];
+}
+}
+}
+
+// ---------- (c) Strassen ----------
+void strassen(int n, int A[n][n], int B[n][n], int C[n][n]) {
+if(n == 1) {
+C[0][0] = A[0][0] * B[0][0];
+return;
+}
+int k = n/2;
+
+int A11[k][k], A12[k][k], A21[k][k], A22[k][k];
+int B11[k][k], B12[k][k], B21[k][k], B22[k][k];
+
+int C11[k][k], C12[k][k], C21[k][k], C22[k][k];
+int M1[k][k], M2[k][k], M3[k][k], M4[k][k], M5[k][k], M6[k][k], M7[k][k];
+int T1[k][k], T2[k][k];
+
+// Split
+for(int i=0; i<k; i++) {
+for(int j=0; j<k; j++) {
+A11[i][j] = A[i][j];
+A12[i][j] = A[i][j+k];
+A21[i][j] = A[i+k][j];
+A22[i][j] = A[i+k][j+k];
+
+B11[i][j] = B[i][j];
+B12[i][j] = B[i][j+k];
+B21[i][j] = B[i+k][j];
+B22[i][j] = B[i+k][j+k];
+}
+}
+
+// Strassen formulas
+addMatrix(k, A11, A22, T1); addMatrix(k, B11, B22, T2); strassen(k, T1, T2, M1);
+addMatrix(k, A21, A22, T1); strassen(k, T1, B11, M2);
+subMatrix(k, B12, B22, T2); strassen(k, A11, T2, M3);
+subMatrix(k, B21, B11, T2); strassen(k, A22, T2, M4);
+addMatrix(k, A11, A12, T1); strassen(k, T1, B22, M5);
+subMatrix(k, A21, A11, T1); addMatrix(k, B11, B12, T2); strassen(k, T1, T2, M6);
+subMatrix(k, A12, A22, T1); addMatrix(k, B21, B22, T2); strassen(k, T1, T2, M7);
+
+// Combine results
+addMatrix(k, M1, M4, T1); subMatrix(k, T1, M5, T2); addMatrix(k, T2, M7, C11);
+addMatrix(k, M3, M5, C12);
+addMatrix(k, M2, M4, C21);
+
+subMatrix(k, M1, M2, T1); addMatrix(k, T1, M3, T2); addMatrix(k, T2, M6, C22);
+
+for(int i=0; i<k; i++) {
+for(int j=0; j<k; j++) {
+C[i][j] = C11[i][j];
+C[i][j+k] = C12[i][j];
+C[i+k][j] = C21[i][j];
+C[i+k][j+k] = C22[i][j];
+}
+}
+}
+
+// ---------- Main driver ----------
+int main() {
+int n;
+printf("Enter matrix size (power of 2): ");
+scanf("%d", &n);
+
+int A[n][n], B[n][n], C[n][n];
+generateMatrix(n, A);
+generateMatrix(n, B);
+
+// Iterative
+clock_t start = clock();
+multiplyIterative(n, A, B, C);
+clock_t end = clock();
+double t_iter = (double)(end - start) / CLOCKS_PER_SEC;
+
+// Recursive
+start = clock();
+multiplyRecursive(n, A, B, C);
+end = clock();
+
+double t_rec = (double)(end - start) / CLOCKS_PER_SEC;
+
+// Strassen
+start = clock();
+strassen(n, A, B, C);
+end = clock();
+double t_strassen = (double)(end - start) / CLOCKS_PER_SEC;
+
+printf("\n=== Execution Time Comparison (n=%d) ===\n", n);
+printf("Iterative: %f seconds\n", t_iter);
+printf("Recursive: %f seconds\n", t_rec);
+printf("Strassen : %f seconds\n", t_strassen);
+
+return 0;
+}
+
