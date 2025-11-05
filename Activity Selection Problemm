@@ -1,0 +1,74 @@
+Write a program to implement the Activity Selection Problem using the
+Greedy Method. Given n activities with their start and finish times,
+select the maximum number of non-overlapping activities that can be
+performed by a single person, assuming a person can only work on one
+activity at a time.
+
+ALGORITHM : Activity Selection (Greedy Method)
+
+• First, we sort the given activity array in ascending
+order based on the completion time of each activity.
+• After sorting, we select the first activity.
+• Then, for rest of the activities, we compare the
+starting time of the current activity (j) with the
+completion time of the previous activity (i).
+• If the starting time of the current activity is greater
+than or equal to the completion time of the previous
+activity, we select this activity as it is a non-overlapping
+activity.
+• Then, we update the value of i with j and increase
+the count by 1.
+• After completion of the loop, we return the count of
+total selected activities.
+
+CODE :
+
+#include <stdio.h>
+typedef struct {
+int start; // Start time of the activity
+int finish; // Finish time of the activity
+} Activity;
+void swap(Activity *a, Activity *b) {
+Activity temp = *a;
+*a = *b;
+*b = temp;
+}
+void sortActivities(Activity arr[], int n) {
+for (int i = 0; i < n - 1; i++) {
+for (int j = 0; j < n - i - 1; j++) {
+if (arr[j].finish > arr[j + 1].finish) {
+swap(&arr[j], &arr[j + 1]);
+}
+}
+}
+}
+int activitySelection(Activity arr[], int n) {
+sortActivities(arr, n);
+int count = 1;
+int i = 0;
+printf("\nSelected Activities (Non-overlapping):\n”);
+printf("Activity 1 -> Start: %d, Finish: %d\n", arr[i].start, arr[i].finish);
+for (int j = 1; j < n; j++) {
+if (arr[j].start >= arr[i].finish) {
+printf("Activity %d -> Start: %d, Finish: %d\n", j + 1, arr[j].start, arr[j].finish);
+i = j;
+count++;
+}
+}
+return count;
+
+}
+int main() {
+int n;
+printf("Enter number of activities: ");
+scanf("%d", &n);
+Activity activities[n];
+printf("Enter start and finish times of activities:\n");
+for (int i = 0; i < n; i++) {
+printf("Activity %d: ", i + 1);
+scanf("%d %d", &activities[i].start, &activities[i].finish);
+}
+int result = activitySelection(activities, n);
+printf("\nTotal number of non-overlapping activities selected: %d\n", result);
+return 0;
+}
